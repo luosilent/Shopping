@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <title>潮男搭配</title>
+    <script src="js/mui.min.js"></script>
+    <script src="js/jquery.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link href="css/iconfont.css" rel="stylesheet"/>
+    <style>
+        * {
+            touch-action: none;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <!-- 底部导航 -->
+    <div id="nav_id">
+        <nav class="mui-bar mui-bar-tab" id="nav">
+            <a class="mui-tab-item mui-active" id="defaultTab" href="html/index.html">
+                <span class="mui-icon mui-icon-flag"></span>
+                <span class="mui-tab-label">首页</span>
+            </a>
+            <a class="mui-tab-item" id="kno" href="html/kno.html">
+                <span class="mui-icon mui-icon-paperplane"></span>
+                <span class="mui-tab-label">发现</span>
+            </a>
+            <a class="mui-tab-item" id="shopping" href="html/buy.html">
+            <span class="mui-icon iconfont icon-icon22fuzhi"> 
+           <!--      <span class="mui-badge mui-badge-red">{{buying_num}}</span> -->
+            </span>
+                <span class="mui-tab-label">购物车</span>
+            </a>
+            <a class="mui-tab-item" id="person" href="html/person.html">
+                <span class="mui-icon mui-icon-contact-filled"></span>
+                <span class="mui-tab-label">我的</span>
+            </a>
+
+
+        </nav>
+    </div>
+</div>
+
+</body>
+</html>
+<script src="js/vue.min.js"></script>
+<script src="js/axios.min.js"></script>
+<script src="js/mui.js"></script>
+<script type="text/javascript">
+    var app = new Vue({
+        el: '#app',
+        data: {
+            user_id: null,
+            buying_num: 0,
+        },
+        mounted: function () {
+            this.getUser();
+            this.getMessage();
+        },
+        methods: {
+            getUser() {
+                axios.get("http://localhost:82/project/php/login.php?oper=get")
+                    .then((response) => {
+                        if (response.data.user) {
+                            this.user_id = response.data.user.user_id;
+                            // 得到数据
+                            if (this.user_id) {
+                                this.buyingNum(this.user_id);
+                            } else {
+                                this.buying_num = '';
+                            }
+
+                        }
+
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            },
+            //获取后台的信息提示
+            getMessage: function () {
+                var message = this.getQueryString('message');
+                if (message) {
+                    mui.toast(decodeURI(message));
+                }
+            },
+            //获取url的请求参数
+            getQueryString(message) {
+                var reg = new RegExp('(^|&)' + message + '=([^&]*)(&|$)', 'i');
+                var r = window.location.search.substr(1).match(reg);
+                if (r !== null) return r[2];
+                return null
+            },
+            //获取购物车商品数量
+            buyingNum(user_id) {
+                axios.post("http://localhost:82/project/php/buying.php?action=select_num&user_id=" + user_id)
+                    .then((res) => {
+                        // console.log(res.data.buying);
+                        if (res.data.buying) {
+                            this.buying_num = res.data.buying;
+                        } else {
+                            this.buying_num = 0;
+                        }
+
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            },
+        },
+
+    });
+    mui.init({
+        gestureConfig: {
+            doubletap: true
+        },
+
+        subpages: [{
+            url: "html/index.html",
+            id: 'MainViwe',
+            styles: {
+                top: '0px',
+                bottom: '0px'
+            }
+        }]
+    });
+
+    mui('.mui-scroll-wrapper').scroll({
+        deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+    });
+
+    //底部选项卡切换跳转
+    (function jumpPage() {
+        //跳转页面
+        var subpages = ['html/index.html', 'html/finding.html', 'html/create_note.html', 'html/shopping.html', 'html/host.html'];
+        var subpage_style = {
+            top: '0px',
+            bottom: '0px',
+            scrollIndicator: 'none'
+        };
+        var Index = 0;
+        var actTab = subpages[Index];
+
+        var aniShow = {};//动画显示
+
+        //首次启动切滑效果
+        //当前激活选项
+        var activeTab = subpages[Index];
+
+        //选项卡点击事件
+        mui('.mui-bar-tab').on('tap', 'a', function (e) {
+            //修改对应分页
+            var targetTab = this.getAttribute('href');
+            $('#MainViwe').attr('src', targetTab);
+
+        });
+
+        //自定义事件，模拟点击“首页选项卡”
+        document.addEventListener('index', function () {
+            var defaultTab = document.getElementById("defaultTab");
+            //模拟首页点击
+            mui.trigger(defaultTab, 'tap');
+            //切换选项卡高亮
+            var current = document.querySelector(".mui-bar-tab>.mui-tab-item.mui-active");
+            if (defaultTab !== current) {
+                current.classList.remove('mui-active');
+                defaultTab.classList.add('mui-active');
+            }
+
+        });
+    })();
+
+</script>

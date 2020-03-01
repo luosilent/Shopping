@@ -1,0 +1,213 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>订单</title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <style>
+        .btn {
+            margin: 0 5px;
+        }
+
+        body {
+            touch-action: none;
+        }
+
+        .bottom_line {
+            text-align: center;
+            color: #777777
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="mui-bar mui-bar-nav">
+    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+    <h1 class="mui-title">我的订单</h1>
+</header>
+<div id="app">
+    <div class="mui-content">
+        <div class="mui-slider" style="margin-top: 2.7rem">
+            <!-- 菜单-->
+            <div class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+                <a class="mui-control-item" href="#item1">全部</a>
+                <a class="mui-control-item" href="#item2">待付款</a>
+                <a class="mui-control-item" href="#item3">已收货</a>
+                <a class="mui-control-item" href="#item4">退款/售后</a>
+                <a class="mui-control-item" href="#item5">已关闭</a>
+            </div>
+            <!-- 以下是5个容器-->
+            <div class="mui-slider-group" >
+                <div id="item1" class="mui-slider-item mui-control-content mui-active">
+                    <ul class="mui-table-view">
+                       <li class="mui-table-view-cell mui-media"  v-for="(item,index) in goodArray">
+                           <img class="mui-media-object mui-pull-left" :src="item.shopping_img">
+                            <div class="mui-media-body">
+                                {{item.shopping_name}}
+                                <span class="mui-pull-right" style="color: green;">已消费</span>
+                                <p class="mui-ellipsis">下单时间：<span>{{item.create_time}}</span></p>
+                                <p class="mui-ellipsis">
+                                    原价：￥<span>{{item.shopping_price}}</span>&nbsp;<span class="mui-pull-right"
+                                                                                        style="color: red;">实际付款￥{{item.shopping_price}}</span>
+                                </p>
+                            </div>
+                        </li>
+                        <li class="bottom_line">我是有底线的...</li>
+                    </ul>
+                </div>
+
+                <div id="item2" class="mui-slider-item mui-control-content">
+                    <ul class="mui-table-view">
+                       <li class="mui-table-view-cell mui-media"  v-for="(item,index) in goodArray">
+                           <img class="mui-media-object mui-pull-left" :src="item.shopping_img">
+                            <div class="mui-media-body">
+                                {{item.shopping_name}}
+                                <span class="mui-pull-right" style="color: orangered;">未付款</span>
+                                <p class="mui-ellipsis">下单时间：<span>{{item.create_time}}</span></p>
+                                <p class="mui-ellipsis">
+                                    原价：￥<span>{{item.shopping_price}}</span>&nbsp;<span class="mui-pull-right"
+                                                                                        style="color: red;">实际付款￥{{item.shopping_price}}</span>
+                                </p>
+                                <p class="mui-ellipsis mui-pull-right" style="width: 100%;">
+                                </p>
+                                <p class="mui-ellipsis mui-pull-right" style="width: 100%;">
+                                    <button type="button" class="mui-btn mui-btn-outlined mui-pull-right btn">付款
+                                    </button>
+                                    <button type="button" class="mui-btn mui-btn-outlined mui-pull-right btn">取消
+                                    </button>
+                                </p>
+
+                            </div>
+                        </li>
+                        <li class="bottom_line">我是有底线的...</li>
+                    </ul>
+                </div>
+                <div id="item3" class="mui-slider-item mui-control-content">
+                    <ul class="mui-table-view">
+                       <li class="mui-table-view-cell mui-media"  v-for="(item,index) in goodArray">
+                           <img class="mui-media-object mui-pull-left" :src="item.shopping_img">
+                            <div class="mui-media-body">
+                                {{item.shopping_name}}
+                                <span class="mui-pull-right" style="color: green;">已完成</span>
+                                <p class="mui-ellipsis">下单时间：<span>{{item.create_time}}</span></p>
+                                <p class="mui-ellipsis">
+                                    原价：￥<span>{{item.shopping_price}}</span>&nbsp;<span class="mui-pull-right"
+                                                                                        style="color: red;">实际付款￥{{item.shopping_price}}</span>
+                                </p>
+                                <p class="mui-ellipsis mui-pull-right" style="width: 100%;">
+                                    <button type="button" class="mui-btn mui-btn-outlined mui-pull-right btn">退款
+                                    </button>
+                                </p>
+
+                            </div>
+                        </li>
+                        <li class="bottom_line">我是有底线的...</li>
+                    </ul>
+                </div>
+                <div id="item4" class="mui-slider-item mui-control-content">
+                    <ul class="mui-table-view">
+                       <li class="mui-table-view-cell mui-media"  v-for="(item,index) in goodArray">
+                           <img class="mui-media-object mui-pull-left" :src="item.shopping_img">
+                            <div class="mui-media-body">
+                                {{item.shopping_name}}
+                                <span class="mui-pull-right" style="color: gray;">处理中</span>
+                                <p class="mui-ellipsis">发起时间：<span>{{item.create_time}}</span></p>
+                                <p class="mui-ellipsis">
+                                    原价：￥<span>{{item.shopping_price}}</span>&nbsp;<span class="mui-pull-right"
+                                                                                        style="color: red;">退款金额￥{{item.shopping_price}}</span>
+                                </p>
+
+                            </div>
+                        </li>
+                        <li class="bottom_line">我是有底线的...</li>
+                    </ul>
+                </div>
+
+                <div id="item5" class="mui-slider-item mui-control-content">
+                    <ul class="mui-table-view">
+                       <li class="mui-table-view-cell mui-media"  v-for="(item,index) in goodArray">
+                           <img class="mui-media-object mui-pull-left" :src="item.shopping_img">
+                            <div class="mui-media-body">
+                                {{item.shopping_name}}
+                                <span class="mui-pull-right" style="color: black;">已关闭</span>
+                                <p class="mui-ellipsis">下单时间：<span>{{item.create_time}}</span></p>
+                                <p class="mui-ellipsis">
+                                    原价：￥<span>{{item.shopping_price}}</span>&nbsp;<span class="mui-pull-right"
+                                                                                        style="color: red;">实际付款￥{{item.shopping_price}}</span>
+                                </p>
+                                </p>
+                                <p class="mui-ellipsis mui-pull-right" style="width: 100%;">
+                                    <button type="button" class="mui-btn mui-btn-outlined mui-pull-right btn">删除订单
+                                    </button>
+                                </p>
+                            </div>
+                        </li>
+                        <li class="bottom_line">我是有底线的...</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- 容器在上面 就是这样 -->
+        </div>
+    </div>
+</div>
+<script src="../js/mui.min.js"></script>
+
+<script type="text/javascript">
+    mui.init()
+</script>
+</body>
+
+</html>
+<script src="../js/vue.min.js"></script>
+<script src="../js/axios.min.js"></script>
+<script src="../js/jquery.js"></script>
+<script type="text/javascript">
+    // 获取产品数据
+    let app = new Vue({
+        el: '#app',
+        data: {
+            user_id: null,
+            goodArray: {},
+        },
+        mounted: function () {
+            this.getUsername();
+        },
+        methods: {
+            //获取用户信息
+            getUsername() {
+                axios.get("http://localhost:82/project/php/login.php?oper=get")
+                    .then((response) => {
+                        if (response.data.user) {
+                            this.user_id = response.data.user.user_id;
+                            // 得到数据
+                            if (this.user_id) {
+                                this.selectBuy(this.user_id);
+                            }
+
+                        }
+
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            },
+            //查询用户的购买订单
+            selectBuy(user_id) {
+                axios.post("http://localhost:82/project/php/buying.php?action=select_buy&is_buy=1&user_id="
+                    + user_id).then((res) => {
+                    console.log(res.data);
+                    this.goodArray = res.data.buying;
+                })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            },
+        }
+    });
+
+
+</script>

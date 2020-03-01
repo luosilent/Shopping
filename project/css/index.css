@@ -1,0 +1,46 @@
+
+.mui-slider{
+	
+	height: 400px;
+}
+.mui-title{
+	font-size: 18px;
+}
+.mui-scroll{
+	width: 100%;
+	top: 0px;
+}
+.mui-content{
+	top: 0px;
+}
+.z1-2{
+	top:400px;
+	width: 90%;
+	height: 200px;
+	margin: auto;
+}
+.z1-3{
+	width:165px ;
+	height: 200px;
+}
+.z1-4{
+	width: 150px;
+	height: 90px;
+	float: right;
+}
+.z1-5{
+	width: 100px;
+	height: 40px;
+	float: right;
+}
+.zz{
+	float: right;
+	height: 200px;
+	width: 170px;
+}
+.z1-6{
+	top: 130px;
+	width: 130px;
+	float: right;
+	height: 50px;
+}

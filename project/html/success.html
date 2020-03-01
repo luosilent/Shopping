@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <link href="../css/mui.css" rel="stylesheet"/>
+    <title></title>
+</head>
+<body>
+</body>
+</html>
+<script src="../js/mui.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+    var btnArray = ['确认'];
+    mui.confirm('注册成功', '', btnArray, function (e) {
+        if (e.index == 0) {
+            location.href = "login.html";
+        }
+    })
+</script>

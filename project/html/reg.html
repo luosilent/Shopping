@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+	<link href="../css/mui.css" rel="stylesheet"/>
+	<link href="../css/clear.css" rel="stylesheet"/>
+	<link href="../css/verification.css?v=2" rel="stylesheet"/>
+
+</head>
+<body>
+    <div id="app">
+       <header class="mui-bar mui-bar-nav">
+          <a class="mui-action-back mui-icon mui-icon-left-nav"></a>
+          <h1 class="mui-title">注册</h1>
+      </header>
+      <div class="mui-content">
+          <p></p>
+          <form class="mui-input-group" @submit="checkForm" action="../php/register.php" method="post">
+
+             <div class="mui-input-row">
+                <label for="username">姓名</label>
+                <input v-model="username" id='username' name="username" type="text" class="mui-input-clear mui-input" placeholder="请输入姓名">
+            </div>
+            <div class="mui-input-row">
+                <label for="password">密码</label>
+                <input v-model="password" id='password' name="password" type="password" class="mui-input-clear mui-input" placeholder="请输入密码">
+            </div>
+            <div class="mui-input-row">
+                <label for="re_password">确认密码</label>
+                <input v-model="re_password" id='re_password' name="re_password" type="password" class="mui-input-clear mui-input" placeholder="再次输入密码">
+            </div>
+            <div class="mui-input-row">
+                <label for="user_tel">手机</label>
+                <input v-model="user_tel" id='user_tel' name="user_tel" type="number" class="mui-input-clear mui-input" placeholder="请输入手机号码">
+            </div>
+            <div class="mui-input-row">
+                <label>头像</label>
+                <input type="file" id="file" v-model="file" name="file"/>
+                <input type="hidden" id="head_img" name="head_img"/>
+            </div>
+            <div  class="mui-input-row">
+               <label for="is_seller">是否卖家</label>
+               <div class="mui-input-row mui-radio" id="is_seller" style="display: inline-block; ">
+                <label>是</label>
+                <input type="radio" name="is_seller"   value="1" />
+            </div>
+            <div class="mui-input-row mui-radio" style="display: inline-block;">
+                <label>否</label>
+                <input type="radio" name="is_seller" checked  value="0" />
+            </div>
+        </div>
+        <div class="mui-input-row login_input">
+            <label for="verifital_input">验证码</label>
+            <input v-model="verifital_input" type="text" id="verifital_input" class="mui-input" placeholder="请输入验证码">
+            <div id="verificationCode" class="verificationCode">
+               <canvas width="100" height="40" id="verifyCanvas"></canvas>
+               <img id="code_img" @click="resetCode()">
+           </div>
+       </div>
+
+       <p class="mui-content-padded" style="text-align: center;"><input v-model="check_info" type="checkbox" id="check_info" name="" />
+        我已经仔细阅读并接受注册许可协议 <a id="pass_info" @click="passInfo()">点击阅读</a></p> 
+
+        <div class="mui-content-padded" style="margin-top: 20px">
+           <button type="submit"  class="mui-btn mui-btn-block mui-btn-primary">立即注册</button>
+       </div>
+   </form>
+   <div class="clear"></div>
+</div>
+</div>
+</body>
+</html>
+<script src="../js/jquery.js"></script>
+<script src="../js/verification.js"></script>
+<script src="../js/mui.js"></script>
+<script src="../js/vue.min.js"></script>
+<script src="../js/axios.min.js"></script>
+<script type="text/javascript">
+
+  new Vue({
+     el: '#app',
+     data: {
+        username: null,
+        password: null,
+        re_password: null,
+        user_tel: null,
+        file: null,
+        verifital_input: null,
+        check_info: '',		
+    },
+    mounted: function () {
+
+        this.getMessage();
+    },
+    methods: {		
+			//前端检查表单输入
+			checkForm: function (e) {
+             var message =  validate();
+             if (this.username == null) {
+                 mui.alert("用户不能为空");
+                 e.preventDefault();
+             }else if (this.password == null) {
+                 mui.alert("密码不能为空");
+                 e.preventDefault();
+             }else if (this.re_password == null || this.re_password != this.password) {
+                 mui.alert("请再次输入正确的密码");
+                 e.preventDefault();
+             }else if (this.user_tel == null) {
+                 mui.alert("手机不能为空");
+                 e.preventDefault();
+             }else if (!this.isPhone(this.user_tel)) {
+                 mui.alert("手机号码格式错误");
+                 e.preventDefault();
+             }else if (message != "success") {
+                mui.alert("请输入正确的验证码");
+                e.preventDefault();
+            }else if (this.check_info == false) {
+                 mui.alert("请点击接受协议");
+                 e.preventDefault();
+             } 
+
+
+        },
+			//获取后台提示信息
+			getMessage: function () {
+				var message = this.getQueryString('message');
+				if (message) {
+					mui.toast(decodeURI(message));
+				}
+			},
+			//获取url的请求参数
+			getQueryString(message) {
+				var reg = new RegExp('(^|&)' + message + '=([^&]*)(&|$)', 'i');
+				var r = window.location.search.substr(1).match(reg);
+				if (r !== null) return r[2];
+				return null
+			},
+            resetCode(){
+                resetCode ();
+            },
+            isPhone(phone){
+                return /^1(3\d|4\d|5\d|6\d|7\d|8\d|9\d)\d{8}$/g.test(phone);
+            },
+            passInfo(){
+                var _this = this;
+                var btnArray = ['赞同', '接受'];
+                mui.confirm('就问你接不接受！', '这是一个协议', btnArray, function(e) {
+                    // 否：e.index=0;是：e.index=1;
+                    if (e.index == 1) {
+                     _this.check_info = true;
+                 } else {
+                   _this.check_info = false;
+               }
+           })
+            }
+
+        },
+		//开启监听
+		watch: {
+			//是否上传图片
+			file(curVal, oldVal) {
+				if (curVal !== null) {
+					var _this = this;
+					var fileData = document.getElementById('file').files[0];
+					var formData = new FormData();
+					formData.append('fileData', fileData);
+					formData.append('dir', 'headimg');
+					$.ajax({
+						type: 'POST',
+						data: formData,
+						url: '../php/upload.php',
+						dataType: 'json',
+						async: false,
+						cache: false,
+						contentType: false,
+						processData: false,
+						success: function (data) {
+							if (data.status == "success") {
+								var imagePath = '../img/headimg/' + data.fileName;
+								$('#head_img').val(imagePath);
+							} else {
+								alert("图片上传失败");
+							}
+
+						},
+						error: function (data) {
+							console.log('错误')
+						}
+					})
+				}
+			}
+		}
+	});
+
+
+</script>

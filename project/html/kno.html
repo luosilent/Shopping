@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <link href="../css/mui.css" rel="stylesheet"/>
+    <link href="../css/note.css?v=1" rel="stylesheet"/>
+    <!-- <link href="../css/iconfont.css" rel="stylesheet"/> -->
+    <link rel="stylesheet" type="text/css" href="http://at.alicdn.com/t/font_1564334_033q22gmmy82.css"/>
+    <script src="../js/mui.js"></script>
+    <style type="text/css">
+        .active {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+<div id="app">
+    <header class="mui-bar mui-bar-nav">
+        <h1 class="mui-title">发现</h1>
+    </header>
+    <div class="mui-content">
+        <div class="mui-input-row mui-search">
+            <input type="search" v-model="search" placeholder="搜索" style="width: 80%;">
+            <button @click="sousuo()">搜索</button>
+        </div>
+
+
+        <div class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+            <a class="mui-control-item mui-active" id="msg1" @click="getNote('穿搭知识')">
+                穿搭知识
+            </a>
+            <a class="mui-control-item " id="msg2" @click="getNote('时尚资讯')">
+                时尚资讯
+            </a>
+            <a class="mui-control-item" id="msg3" @click="getNote('护肤品推荐')">
+                护肤品推荐
+            </a>
+
+        </div>
+        <div v-for="(note,index) in notes">
+            <div class="mui-card">
+                <!--页眉，放置标题-->
+                <div class="mui-card-header mui-card-media">
+                    <img :src="note.image"/>
+                    <div class="mui-media-body">
+                        发表于{{note.name}}
+                        <p>{{note.time}}</p>
+                    </div>
+                </div>
+                <!--内容区-->
+                <div class="mui-card-header mui-card-media"
+                     :style=" 'height:40vw;background-image:url('+ note.content_image+')' "></div>
+                <div class="mui-media-body" style="font-size: 1.2rem">
+                    &nbsp &nbsp {{note.content}}
+                </div>
+                <!--页脚，放置补充信息或支持的操作-->
+                <div class="mui-card-footer ">
+                    <div class="pers_icodiv ">
+                        <!-- 点赞 -->
+                        <div v-if="praiseList.includes(note.id)">
+                            <div class="icon iconfont icon-changyongtubiao-xianxingdaochu-zhuanqu- active"
+                                 @click="praise(note)">
+                                <span class="mui-badge mui-badge-red" :id="'praise_'+note.id">{{note.praise}}</span>
+                            </div>
+                        </div>
+                        <div v-else>
+                            <div class="icon iconfont icon-changyongtubiao-xianxingdaochu-zhuanqu-"
+                                 @click="praise(note)">
+                                <span class="mui-badge mui-badge-red" :id="'praise_'+note.id">{{note.praise}}</span>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="pers_icodiv ">
+                        <!-- 收藏 -->
+                        <div v-if="collectList.includes(note.id)">
+                            <div class="icon iconfont icon-shoucang active"
+                                 @click="collect(note)"><span class="mui-badge mui-badge-red" :id="'collect_'+note.id">{{note.collect}}</span>
+                            </div>
+                        </div>
+                        <div v-else>
+                            <div class="icon iconfont icon-shoucang" @click="collect(note)"><span
+                                    class="mui-badge mui-badge-red" :id="'collect_'+note.id">{{note.collect}}</span>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="margin-bottom: 50px"></div>
+    </div>
+</div>
+</body>
+</html>
+<script src="../js/vue.min.js"></script>
+<script src="../js/axios.min.js"></script>
+<script src="../js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8">
+    var app = new Vue({
+        el: '#app',
+        data: {
+            search: null,
+            notes: [],
+            collectList: [],
+            praiseList: [],
+            i_collect: 0,
+            i_praise: 0,
+            user_id: 0,
+        },
+        mounted: function () {
+            this.getNote();
+            this.getUsername();
+
+        },
+        methods: {
+            getUsername() {
+                axios.get("http://localhost:82/project/php/login.php?oper=get")
+                    .then((response) => {
+                        if (response.data.user) {
+                            this.user_id = response.data.user.user_id;
+                            this.getCollect(this.user_id);
+                            this.getPraise(this.user_id);
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+
+            },
+            getNote: function (type = "穿搭知识") {
+                axios.post("http://localhost:82/project/php/note.php?action=getNote&type=" + type)
+                    .then((response) => {
+                        // console.log(response.data);
+                        this.notes = response.data.notes;
+
+
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            },
+            getCollect(user_id) {
+                var _this = this;
+                var note_data = {
+                    "user_id": user_id,
+                    "condition": "collect",
+                };
+
+                axios.post("http://localhost:82/project/php/note.php?action=select_my_note", note_data)
+                    .then((response) => {
+                        if (response.data.notes) {
+                            response.data.notes.forEach(function (note, index) {
+                                _this.collectList.push(note.note_id);
+                                // console.log(note.note_id);
+                            });
+                        }
+                        // console.log(this.collectList);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            },
+            getPraise(user_id) {
+                var _this = this;
+                var note_data = {
+                    "user_id": user_id,
+                    "condition": "praise",
+                };
+                axios.post("http://localhost:82/project/php/note.php?action=select_my_note", note_data)
+                    .then((response) => {
+                        // console.log(response.data);
+                        if (response.data.notes) {
+                            response.data.notes.forEach(function (note, index) {
+                                _this.praiseList.push(note.note_id);
+                            });
+                        }
+                        // console.log(this.praiseList);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            },
+            collect(note) {
+                var _this = this;
+                var collect_id = 'collect_' + note.id;
+
+                //构建请求参数
+                var note_data = {
+                    "user_id": _this.user_id,
+                    "note_id": note.id,
+                    "note_name": note.name,
+                    "note_content": note.content,
+                    "note_type": note.type,
+                    "note_image": note.content_image,
+                    "condition": "collect",
+                    "type": "collect",
+                };
+                var btnArray = ['不确定', '确定'];
+                if ( _this.collectList.includes(note.id)) {
+                    // console.log(note.collect);
+
+                    mui.confirm('确定取消不要他了吗？', '呵呵', btnArray, function (e) {
+                        if (e.index == 1) {
+                            _this.collectList = _this.collectList.filter(function (ex) {
+                                return ex !== note.id;
+                            });
+                            note_data.type = "remove";
+                            _this.updateNote(note_data);
+                        }else {
+                            document.getElementById(collect_id).innerText = (parseInt(note.collect)).toString();
+                        }
+                    })
+                } else {
+                    _this.collectList.push(note.id);
+                    note_data.type = "add";
+                    _this.updateNote(note_data);
+                }
+
+            },
+            praise(note) {
+                var _this = this;
+                _this.i_praise = note.id;
+                var praise_id = 'praise_' + note.id;
+                //构建请求参数
+                var note_data = {
+                    "user_id": this.user_id,
+                    "note_id": note.id,
+                    "note_name": note.name,
+                    "note_content": note.content,
+                    "note_type": note.type,
+                    "note_image": note.content_image,
+                    "condition": "praise",
+                };
+                var btnArray = ['不确定', '确定'];
+                if ( _this.praiseList.includes(note.id)) {
+                    // console.log(note.praise);
+
+                    mui.confirm('确定取消不要他了吗？', '呵呵', btnArray, function (e) {
+                        if (e.index == 1) {
+                            _this.praiseList = _this.praiseList.filter(function (ex) {
+                                return ex !== note.id;
+                            });
+                            note_data.type = "remove";
+                            _this.updateNote(note_data);
+                        }else {
+                            document.getElementById(praise_id).innerText = (parseInt(note.praise)).toString();
+                        }
+                    })
+                } else {
+                    note_data.type = "add";
+                    this.updateNote(note_data);
+                    _this.praiseList.push(note.id);
+                }
+
+
+            },
+            updateNote(note_data) {
+                axios.post("http://localhost:82/project/php/note.php?action=update_note", note_data)
+                    .then((response) => {
+                        var note_array = response.data.notes;
+                        if (note_data.condition == "praise"){
+                            document.getElementById('praise_' + note_array.id).innerText =  note_array.praise;
+                        }
+                        if (note_data.condition == "collect"){
+                            document.getElementById('collect_' + note_array.id).innerText =  note_array.collect;
+                        }
+
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            },
+
+            sousuo() {
+                axios.get("http://localhost:82/project/php/note.php?action=search&search=" + this.search)
+                    .then((response) => {
+                        console.log(response.data);
+                        this.notes = response.data.notes;
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            },
+        },
+        watch:{
+
+        }
+    });
+
+</script>

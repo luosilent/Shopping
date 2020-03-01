@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer">
+    <title></title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="../css/person.css"/>
+    <script src="../js/mui.js"></script>
+    <script>
+        mui.init();
+    </script>
+</head>
+
+<body>
+<div id="app">
+
+    <!-- 头部 -->
+    <header class="mui-bar mui-bar-nav">
+        <a class="mui-action-back mui-icon mui-icon-left-nav"></a>
+        <h1 class="mui-title">上架商品</h1>
+    </header>
+    <!-- 主体 -->
+    <div class="mui-content ">
+        <div class="box2" style="margin-top: 10px">
+            <form name="myForm" @submit="checkForm" action="../php/shelves.php" method="post">
+                <input type="hidden" id="user_id" name="user_id" :value="user_id"/>
+                <div class="feature">
+                    <label for="name">商品名称</label>
+                    <input type="text" v-model="name" id="name" name="name"/>
+                </div>
+                <div class="feature">
+                    <label for="price">商品价格</label>
+                    <input type="number" id="price" name="price">
+                </div>
+                <div class="feature">
+                    <label for="content">商品介绍</label>
+                    <textarea id="content" name="content"></textarea>
+                </div>
+
+                <div class="feature">
+                    <label for="image">图片</label>
+                    <input type="file" id="file" v-model="file" name="file"/>
+                    <input type="hidden" id="image" name="image"/>
+                </div>
+                <div class="feature" style="margin-top: 15px">
+                    <label>选择分类</label>
+                    <div class="mui-input-row mui-radio">
+                        <label>明星</label>
+                        <input name="type" checked="checked"  type="radio" value="明星">
+                    </div>
+                    <div class="mui-input-row mui-radio">
+                        <label>上装</label>
+                        <input name="type"  v-model="type" type="radio" value="上装">
+                    </div>
+                    <div class="mui-input-row mui-radio">
+                        <label>下装</label>
+                        <input name="type" type="radio" value="下装">
+                    </div>
+                    <div class="mui-input-row mui-radio">
+                        <label>套装</label>
+                        <input name="type" v-model="type" type="radio" value="套装">
+                    </div>
+                    <div class="mui-input-row mui-radio">
+                        <label>手表</label>
+                        <input name="type" v-model="type" type="radio" value="手表">
+                    </div>
+                </div>
+
+
+                <div class="button-panel">
+                    <button type="submit" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined">上架</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div style="margin-bottom: 55px"></div>
+</div>
+</body>
+</html>
+<script src="../js/jquery.js"></script>
+<script src="../js/jquery-2.1.4.min.js"></script>
+<script src="../js/vue.min.js"></script>
+<script src="../js/axios.min.js"></script>
+<script type="text/javascript">
+
+    new Vue({
+        el: '#app',
+        data: {
+            user_id: 0,
+            name: "",
+            image: "",
+            file: null,
+            price: 0,
+            type: "",
+        },
+        mounted: function () {
+            this.getUsername();
+            this.getMessage();
+        },
+        methods: {
+            //获取用户信息
+            getUsername: function () {
+                axios.get("http://localhost:82/project/php/login.php?oper=get")
+                    .then((response) => {
+                        if (response.data.user) {
+                            this.user_id = response.data.user.user_id;
+                            console.log(this.user_id );
+                        } else {
+                            mui.alert("请先登录", function () {
+                                window.location = "logon.html";
+                            });
+                        }
+
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            },
+            //前端检查表单输入
+            checkForm: function (e) {
+                if (this.name == null) {
+                    mui.alert("商品名称不能为空");
+                    e.preventDefault();
+                } else if (this.type == null) {
+                    mui.alert("分类不能为空");
+                    e.preventDefault();
+                }else if (this.user_id == 0) {
+                    mui.alert("请重新登录");
+                    e.preventDefault();
+                }
+            },
+            //获取后台提示信息
+            getMessage: function () {
+                var message = this.getQueryString('message');
+                if (message) {
+                    mui.toast(decodeURI(message));
+                }
+            },
+            //获取url的请求参数
+            getQueryString(message) {
+                var reg = new RegExp('(^|&)' + message + '=([^&]*)(&|$)', 'i');
+                var r = window.location.search.substr(1).match(reg);
+                if (r !== null) return r[2];
+                return null
+            },
+
+        },
+        //开启监听
+        watch: {
+            //是否上传图片
+            file(curVal, oldVal) {
+                if (curVal !== null) {
+                    var _this = this;
+                    var fileData = document.getElementById('file').files[0];
+                    var formData = new FormData();
+                    formData.append('fileData', fileData);
+                    formData.append('dir', 'shopping');
+                    $.ajax({
+                        type: 'POST',
+                        data: formData,
+                        url: '../php/upload.php', // 请求的uploadFile.php的地址
+                        dataType: 'json', // 传递数据的格式
+                        async: false, // 这是重要的一步，防止重复提交的
+                        cache: false,  // 设置为false，上传文件不需要缓存。
+                        contentType: false, // 设置为false,因为是构造的FormData对象,所以这里设置为false。
+                        processData: false, // 设置为false,因为data值是FormData对象，不需要对数据做处理。
+                        success: function (data) {
+                            if (data.status == "success") {
+                                var imagePath = '../img/shopping/' + data.fileName;
+                                $('#image').val(imagePath);
+                            } else {
+                                alert("图片上传失败");
+                            }
+
+                        },
+                        error: function (data) {
+                            console.log('错误')
+                        }
+                    })
+                }
+            }
+        }
+    });
+</script>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <link href="../css/mui.css" rel="stylesheet"/>
+    <style>
+        .content{
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            overflow:hidden;
+            /*! autoprefixer: off */
+            -webkit-box-orient: vertical;
+
+        }
+    </style>
+    <script src="../js/mui.js"></script>
+</head>
+<body>
+<div id="app">
+    <header class="mui-bar mui-bar-nav">
+        <a class="mui-action-back mui-icon mui-icon-left-nav"></a>
+        <h1 class="mui-title">我的收藏</h1>
+    </header>
+    <div class="mui-content">
+        <ul class="mui-table-view mui-table-view-chevron">
+            <div v-if="collectArray">
+                <li class="mui-table-view-cell mui-media" v-for="(item,index) in collectArray">
+                    <img class="mui-media-object mui-pull-left" :src="item.note_image">
+                    <div class="mui-media-body " >
+                        <div class="content">{{item.note_content}}</div>
+                        <span class="mui-pull-right" > {{item.note_type}}</span>
+                        <p class="mui-ellipsis">time：<span>{{item.create_time}}</span></p>
+                        <p class="mui-ellipsis">By: {{item.note_name}}</p>
+                    </div>
+                </li>
+            </div>
+            <div v-else>
+                <div class="mui-table-view-cell mui-media">
+                    暂无数据
+                </div>
+            </div>
+
+        </ul>
+
+    </div>
+</div>
+</body>
+</html>
+<script src="../js/vue.min.js"></script>
+<script src="../js/axios.min.js"></script>
+<script src="../js/jquery.js"></script>
+<script type="text/javascript">
+    // 获取产品数据
+    let app = new Vue({
+        el: '#app',
+        data: {
+            user_id: null,
+            collectArray: {},
+        },
+        mounted: function () {
+            this.getUsername();
+        },
+        methods: {
+            //获取用户信息
+            getUsername() {
+                axios.get("http://localhost:82/project/php/login.php?oper=get")
+                    .then((response) => {
+                        if (response.data.user) {
+                            this.user_id = response.data.user.user_id;
+                            // 得到数据
+                            if (this.user_id) {
+                                this.selectCollect(this.user_id);
+                            }
+
+                        }
+
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            },
+            //查询用户的购买订单
+            selectCollect(user_id) {
+                //构建请求参数
+                var note_data = {
+                    "user_id": user_id,
+                    "condition": "collect",
+                };
+                axios.post("http://localhost:82/project/php/note.php?action=select_my_note"
+                    , note_data).then((res) => {
+                    console.log(res.data);
+                    this.collectArray = res.data.notes;
+                })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            },
+        }
+    });
+
+
+</script>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+    content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <link href="../css/mui.css" rel="stylesheet"/>
+    <script type="text/javascript" src="../js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="../js/shopping.js"></script>
+    <link type="text/css" rel="stylesheet" href="../css/base.css"/>
+    <link type="text/css" rel="stylesheet" href="../css/module.css"/>
+    <title></title>
+</head>
+<body>
+    <div id="app">
+        <header class="mui-bar mui-bar-nav">
+            <a class="mui-action-back mui-icon mui-icon-left-nav"></a>
+            <h1 class="mui-title">我的购物车</h1>
+        </header>
+        <div class="mui-content">
+            <div class="shop-group-item">
+                <ul>
+                    <li v-for="(item,index) in goodArray">
+                        <div class="shop-info">
+                            <input type="checkbox" v-model="checkList" :value="item.shopping_id"
+                            @click="checkedBox(item.shopping_id,item.shopping_price*item.total)"
+                            class="check goods-check goodsCheck"/>
+                            <div class="shop-info-img"><a href="#"><img :src="item.shopping_img"/></a></div>
+                            <div class="shop-info-text">
+                                <h4>{{item.shopping_name}}</h4>
+                                <br>
+                                <div class="shop-price">
+                                    <div class="shop-pices">{{item.shopping_price}}<br>
+                                        共：￥{{item.shopping_price*item.total}}
+                                    </div>
+                                    <div class="shop-arithmetic">
+                                        <a @click="remove(item)" class="minus">-</a>
+                                        <span class="num" :id="'shopping_'+item.shopping_id">{{item.total}}</span>
+                                        <a @click="add(item)" class="plus">+</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <div class="shopPrice">总计：￥<span class="shop-total-amount ShopTotal">{{total_amount}}</span>
+                    已选：￥<span class="shop-total-amount ShopTotal">{{checked_amount}}</span>
+                </div>
+            </div>
+        </div>
+        <div class="payment-bar" style="margin-bottom: 50px">
+            <div class="all-checkbox">
+                <input type="checkbox" v-model="checked" @click="checkedAll()" :value="checked" class="check goods-check">全选
+            </div>
+            <div class="shop-total">
+                <strong>总价：<i class="total" id="AllTotal">{{checked_amount}}</i></strong>
+            </div>
+            <a @click="submit()" class="settlement">提交订单</a>
+        </div>
+    </div>
+</body>
+</html>
+
+
+<script type="text/javascript" src="../js/axios.min.js"></script>
+<script type="text/javascript" src="../js/vue.min.js"></script>
+<script type="text/javascript" src="../js/mui.js"></script>
+<script type="text/javascript" charset="utf-8">
+    var app = new Vue({
+        el: '#app',
+        data: {
+            user_id: null,
+            idsArray: [],
+            goodArray: {},
+            shopping: [],
+            checked: false,
+            checkList: [],
+            total_amount: 0,
+            checked_amount: 0
+        },
+        mounted() {
+            this.getUsername();
+        },
+        methods: {
+            getUsername() {
+                axios.get("http://localhost:82/project/php/login.php?oper=get")
+                .then((response) => {
+                    if (response.data.user) {
+                        this.user_id = response.data.user.user_id;
+                            // 得到数据
+                            if (this.user_id) {
+                                this.selectAll(this.user_id);
+                            }
+
+                        }
+
+                    })
+                .catch((error) => {
+                    console.log(error);
+                })
+
+            },
+            selectAll(user_id) {
+                axios.post("http://localhost:82/project/php/buying.php?action=select_all&user_id=" + user_id)
+                .then((res) => {
+                    console.log(res.data);
+                    this.goodArray = res.data.buying;
+                })
+                .catch((error) => {
+                    console.log(error);
+                })
+            },
+            //更新购物车的商品数量
+            update(shopping_data) {
+                axios.post("http://localhost:82/project/php/buying.php?action=update", shopping_data)
+                    .then((response) => {
+                        this.goodArray = response.data.buying;
+                        // console.log(this.goodArray);
+
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            },
+            //点击加号按钮
+            add(shopping) {
+                //商品数量+1
+                var total = parseInt(shopping.total) + 1;
+                //构建请求参数
+                var shopping_data = {
+                    "user_id": this.user_id,
+                    "shopping_id": shopping.shopping_id,
+                    "total": total
+                };
+                //调用更新商品数量方法
+                this.update(shopping_data);
+                if (this.checkList.includes(shopping.shopping_id)) {
+                    //此时，若该商品是选中状态，则更新已选商品总价
+                    app.checked_amount += parseFloat(shopping.shopping_price);
+                }
+                //页面实时更新商品数量
+                var shopping_id = 'shopping_' + shopping.shopping_id;
+                document.getElementById(shopping_id).innerText = total;
+
+            },
+            //点击减号按钮
+            remove(shopping) {
+                var shopping_data = {"user_id": this.user_id, "shopping_id": shopping.shopping_id};
+                if (shopping.total == 1) {
+                    //当商品数量为1时，点击减号就删除购物车中的商品
+                    axios.post("http://localhost:82/project/php/buying.php?action=delete", shopping_data)
+                        .then((response) => {
+                            this.goodArray = response.data.buying;
+
+                            mui.toast("删除成功");
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        })
+                } else {
+                    //改商品数量大于1，则数量-1
+                    var total = parseInt(shopping.total) - 1;
+                    shopping_data.total = total;
+                    if (this.checkList.includes(shopping.shopping_id)) {
+                        //此时，若该商品是选中状态，则更新已选商品总价
+                        app.checked_amount -= parseFloat(shopping.shopping_price);
+                    }
+                    //调用更新商品数量方法
+                    this.update(shopping_data);
+                    //页面实时更新商品数量
+                    var shopping_id = 'shopping_' + shopping.shopping_id;
+                    document.getElementById(shopping_id).innerText = total;
+
+                }
+            },
+            //结算
+            submit() {
+                var _this = this;
+                if (_this.checked_amount == 0) {
+                    mui.toast("请至少选择一件商品");
+                } else {
+                    mui.toast("付款ing,共：" + _this.checked_amount + "元");
+                    this.checkList.forEach(function (id, index) {
+                        //结算已选中的商品，更新到购物车表中，修改is_buy=1
+                        var shopping_data = {"user_id": _this.user_id, "shopping_id": id, "is_buy": 1};
+                        axios.post("http://localhost:82/project/php/buying.php?action=update_buy", shopping_data)
+                            .then((response) => {
+                                _this.goodArray = response.data.buying;
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            })
+                    });
+                    //清空已选商品总价
+                    app.checked_amount = 0;
+                    mui.alert("提交订单成功", function () {
+                        window.location = "order.html";
+                    });
+
+                }
+
+            },
+            //全选，添加购物车中所有商品id到已选数组
+            checkedAll() {
+                var _this = this;
+                if (_this.checked) {
+                    //实现反选
+                    _this.checkList = [];
+                    _this.checked_amount = 0;
+                } else {
+                    //实现全选
+                    _this.checkList = [];
+                    this.goodArray.forEach(function (item, index) {
+                        _this.checkList.push(item.shopping_id);
+                    });
+                }
+            },
+            //单多选，改变已选数组和已选总价
+            checkedBox(index, shopping_price) {
+                var _this = this;
+                if (this.checkList.includes(index)) {
+                    this.checkList = this.checkList.filter(function (e) {
+                        return e !== index;
+                    });
+                    app.checked_amount -= parseFloat(shopping_price);
+                } else {
+                    this.checkList.push(index);
+                    app.checked_amount += parseFloat(shopping_price);
+                }
+            }
+        },      //开启监听
+        watch: {
+            //已选数组
+            'checkList': {
+                handler: function (val, oldVal) {
+                    var _this = this;
+
+                    if (val.length === this.goodArray.length) {
+                        this.checked = true;
+                        _this.total_amount = 0;
+                        _this.checked_amount = 0;
+                        this.goodArray.forEach(function (item, index) {
+                            _this.total_amount += (item.shopping_price * item.total);
+                            _this.checked_amount = _this.total_amount;
+                        });
+
+                    } else {
+                        this.checked = false;
+                    }
+                },
+                deep: true
+            },
+            //购物车商品数组
+            'goodArray': {
+                handler: function (val, oldVal) {
+                    var _this = this;
+                    _this.total_amount = 0;
+                    if (this.goodArray) {
+                        this.goodArray.forEach(function (item, index) {
+                            _this.total_amount += (item.shopping_price * item.total);
+                        });
+                    }
+
+                },
+                deep: true
+            }
+        }
+  
+    })
+
+
+</script>

@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<link href="../css/mui.min.css" rel="stylesheet" />
+	<link href="../css/login.css?v=1" rel="stylesheet"/>
+
+</head>
+
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav"></a>
+		<h1 class="mui-title">我的</h1>
+	</header>
+	<div class="mui-content">
+		<form class="mui-input-group" id="loginForm" action="../php/login.php" method="post">
+			<div class="mui-input-row">
+				<label>账号</label>
+				<input id='username'  name="username" type="text" class="mui-input-clear mui-input" placeholder="请输入账号">
+			</div>
+			<div class="mui-input-row">
+				<label>密码</label>
+				<input id='password' name="password" type="password" class="mui-input-clear mui-input" placeholder="请输入密码">
+			</div>
+
+		</form>
+
+		<div class="mui-content-padded">
+			<button id='login' onclick="login()" class="mui-btn mui-btn-block mui-btn-primary">登录</button>
+			<div class="link-area">
+			<a id='reg' href="reg.html">注册账号</a> <span class="spliter">|</span>
+				<a id='forgetPassword' href="forgetPwd.html">忘记密码</a>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
+
+<script src="../js/mui.js"></script>
+<script src="../js/jquery.js"></script>
+<script >
+	mui.init();
+	//通过url获取提示
+	function  getQueryString (message) {
+		var reg = new RegExp('(^|&)' + message + '=([^&]*)(&|$)', 'i');
+		var r = window.location.search.substr(1).match(reg);
+		if (r !== null) return r[2];
+		return "";
+	}
+
+	var message = getQueryString('message');
+	if (message){
+		mui.toast(decodeURI(message));
+	}
+
+	function login(){
+		document.getElementById("loginForm").submit();
+
+	}
+
+</script>

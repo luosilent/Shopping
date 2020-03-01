@@ -1,0 +1,296 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>个人中心</title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="../css/person.css"/>
+    <link rel="stylesheet" type="text/css" href="http://at.alicdn.com/t/font_1564334_522l09f7edx.css"/>
+</head>
+
+<body>
+<div id="app">
+    <div class="mui-content">
+        <!--内容-->
+        <!--头部-->
+        <div class="head">
+            <!--头像-->
+            <div class="head_Avatar">
+                <input style="display: none" v-model="file" type="file" id="file"/>
+                <img :src="head_img" style="width: 100%;height: 100%;" @click="getImg()">
+            </div>
+            <!--昵称-->
+            <div class="head_img">
+                <div style="font-size: 1.8rem">{{username}}</div>
+                <div style="margin-top: 0.5rem">手机：{{user_tel}}</div>
+            </div>
+            <!--消息与二维码-->
+            <div class="head_but">
+                <div class="a"><span class="mui-icon mui-icon-chatbubble"></span></div>
+
+            </div>
+        </div>
+        <!--头部-->
+        <!--积分-->
+        <div class="integral">
+            <div class="integral_left">
+                <div>购买积分</div>
+                <div>1314</div>
+            </div>
+            <div class="integral_right">
+                <div>已赚积分</div>
+                <div>1234</div>
+            </div>
+
+        </div>
+        <!--积分-->
+        <!--订单-->
+        <div class="Order ico a">
+            <div class="Order_icodiv ">
+                <div class="icon iconfont icon-quanbu " style="color:rgba(0,128,255,1);"></div>
+                <div>全部</div>
+            </div>
+            <div class="Order_icodiv">
+
+                <div class="icon iconfont icon-daishouhuo" style="color:rgba(0,128,255,1);"></div>
+                <div>待收货</div>
+            </div>
+            <div class="Order_icodiv ">
+                <div class="icon iconfont icon-yishouhuo" style="color:rgba(0,128,255,1);"></div>
+                <div>已收货
+                </div>
+            </div>
+
+            <div class="Order_icodiv ">
+                <div class="icon iconfont icon-tuikuanshouhou" style="color:rgba(0,128,255,1);"></div>
+                <div>退款/售后</div>
+            </div>
+
+        </div>
+        <!--订单-->
+
+        <!--功能按钮-->
+        <ul class="mui-table-view" style="margin-top: 1rem">
+
+            <li class="mui-table-view-cell ico">
+                <div class="pers_icodiv">
+                    <a href="order.html">
+                        <div class="icon iconfont icon-wodedingdan" style="color:rgba(0,128,255,1);"></div>
+                        <div>我的订单</div>
+                    </a>
+                </div>
+                <div class="pers_icodiv a">
+                    <div class="icon iconfont icon-icon-test" style="color:rgba(0,128,255,1);"></div>
+                    <div>积分中心
+                    </div>
+                </div>
+                <div v-if="is_seller == 1">
+                    <a href="shelves.html">
+                    <div class="pers_icodiv a">
+                        <div class="icon iconfont icon-fabu1" style="color:rgba(0,128,255,1);"></div>
+                        <div>上架商品</div>
+                    </div>
+                    </a>
+                </div>
+                <div v-else>
+                    <div class="pers_icodiv a">
+                        <div class="icon iconfont icon-hongbao" style="color:rgba(0,128,255,1);"></div>
+                        <div>红包中心</div>
+                    </div>
+                </div>
+
+            </li>
+            <div v-if="is_seller == 1">
+                <li class="mui-table-view-cell ico">
+                    <div class="pers_icodiv a">
+                        <div class="icon  iconfont icon-shangpin" style="color:rgba(0,128,255,1);"></div>
+                        <div>商品动态</div>
+                    </div>
+                    <div class="pers_icodiv a">
+                        <div class="icon iconfont icon-dianpu" style="color:rgba(0,128,255,1);"></div>
+                        <div>我的店铺</div>
+                    </div>
+
+                    <div class="pers_icodiv a">
+                        <div class="icon iconfont icon-fabu" style="color:rgba(0,128,255,1);"></div>
+                        <div>我的商品</div>
+                    </div>
+                </li>
+            </div>
+            <div v-else>
+                <li class="mui-table-view-cell ico">
+                    <div class="pers_icodiv a">
+                        <div class="icon  iconfont icon-shangpin" style="color:rgba(0,128,255,1);"></div>
+                        <div>订阅商品</div>
+                    </div>
+                    <div class="pers_icodiv a">
+                        <div class="icon iconfont icon-dianpu" style="color:rgba(0,128,255,1);"></div>
+                        <div>关注店铺</div>
+                    </div>
+
+                    <div class="pers_icodiv a">
+                        <div class="icon iconfont icon-pinglun" style="color:rgba(0,128,255,1);"></div>
+                        <div>我的评论</div>
+                    </div>
+                </li>
+            </div>
+
+
+            <li class="mui-table-view-cell ico">
+
+                <div class="pers_icodiv ">
+                    <a href="myCollect.html">
+                        <div class="icon iconfont icon-aixin" style="color:rgba(0,128,255,1);"></div>
+                        <div>我的收藏</div>
+                    </a>
+                </div>
+                <div class="pers_icodiv ">
+                    <a href="myPraise.html">
+                        <div class="icon iconfont icon-dianzan" style="color:rgba(0,128,255,1);"></div>
+                        <div>我的点赞</div>
+                    </a>
+                </div>
+                <div class="pers_icodiv" @click="quit()">
+                    <div class="icon iconfont icon-tuichu" style="color:rgba(0,128,255,1);"></div>
+                    <div>退出</div>
+                </div>
+            </li>
+
+        </ul>
+        <!--功能按钮-->
+
+    </div>
+
+</div>
+</body>
+
+</html>
+<script src="../js/vue.min.js"></script>
+<script src="../js/axios.min.js"></script>
+<script src="../js/mui.min.js"></script>
+<script src="../js/jquery.js"></script>
+<script src="../js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript">
+    mui.init()
+</script>
+<script type="text/javascript">
+
+    new Vue({
+        el: '#app',
+        data: {
+            username: "",
+            user_id: "",
+            user_tel: "",
+            notes: [],
+            head_img: "",
+            is_seller: 0,
+            file: null,
+            download: false
+        },
+        mounted: function () {
+            this.getUsername();
+            this.getMessage();
+
+        },
+        methods: {
+            //获取用户信息
+            getUsername: function () {
+                axios.get("http://localhost:82/project/php/login.php?oper=get")
+                    .then((response) => {
+                        if (response.data.user) {
+                            this.username = response.data.user.username;
+                            this.head_img = response.data.user.head_img;
+                            this.user_id = response.data.user.user_id;
+                            this.user_tel = response.data.user.user_tel;
+                            this.is_seller = response.data.user.is_seller;
+
+                        } else {
+                            mui.alert("请先登录", function () {
+                                window.location = "login.html";
+                            });
+                        }
+
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            },
+            //获取我的发布笔记
+
+            //获取后台的信息提示
+            getMessage: function () {
+                var message = this.getQueryString('message');
+                if (message) {
+                    mui.toast(decodeURI(message));
+                }
+            },
+            //获取url的请求参数
+            getQueryString(message) {
+                var reg = new RegExp('(^|&)' + message + '=([^&]*)(&|$)', 'i');
+                var r = window.location.search.substr(1).match(reg);
+                if (r !== null) return r[2];
+                return null
+            },
+            //通过点击图片调用图片上传
+            getImg: function () {
+                $('#file').click();
+            },
+            //更新用户头像信息
+            updImage(id, image) {
+                axios.get("http://localhost:82/project/php/image.php?id=" + id + "&image=" + image).then(res => {
+                    if (res.data != "") {
+                        this.head_img = res.data;
+                    } else {
+                        alert("更改头像失败");
+                    }
+                })
+            },
+            quit() {
+                window.parent.location.href = "login.html";
+            }
+
+        },
+        //开启监听
+        watch: {
+            //是否上传图片
+            file(curVal, oldVal) {
+                if (curVal !== null) {
+                    var _this = this;
+                    var fileData = document.getElementById('file').files[0];
+                    var user_id = _this.user_id;
+                    var formData = new FormData();
+                    formData.append('fileData', fileData);
+                    formData.append('dir', "headimg");
+                    $.ajax({
+                        type: 'POST',
+                        data: formData,
+                        url: '../php/upload.php', // 请求的uploadFile.php的地址
+                        dataType: 'json', // 传递数据的格式
+                        async: false, // 这是重要的一步，防止重复提交的
+                        cache: false,  // 设置为false，上传文件不需要缓存。
+                        contentType: false, // 设置为false,因为是构造的FormData对象,所以这里设置为false。
+                        processData: false, // 设置为false,因为data值是FormData对象，不需要对数据做处理。
+                        success: function (data) {
+                            if (data.status == "success") {
+                                var imagePath = '../img/headimg/' + data.fileName
+                                _this.updImage(user_id, imagePath);
+                                mui.alert("头像更新成功");
+                            } else {
+                                mui.alert("头像上传失败");
+                            }
+
+                        },
+                        error: function (data) {
+                            console.log('错误')
+                        }
+                    })
+                }
+            }
+        }
+    })
+
+
+</script>

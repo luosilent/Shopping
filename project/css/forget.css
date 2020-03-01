@@ -1,0 +1,41 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+.con {
+	width: 95%;
+	margin: 10px auto;
+}
+/*原手机号码输入框*/
+
+.innn {
+	height: 40px;
+	width: 100%;
+}
+/*验证码容器*/
+
+.yanzhengma {
+	height: 40px;
+	width: 100%;
+}
+/*验证码输入框*/
+
+.yanzhengma input {
+	height: 40px;
+	width: 70%;
+}
+/*获取验证码按钮*/
+
+.yanzhengma button {
+	height: 40px;
+	width: 28%;
+	padding: 0;
+	margin: 0;
+}
+
+.tinam {
+	font-size: 16px;
+	height: 30px;
+	line-height: 50px;
+}
